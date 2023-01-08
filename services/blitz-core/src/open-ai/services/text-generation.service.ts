@@ -38,6 +38,7 @@ export class TextGenerationService {
       return data;
     } catch (error) {
       console.log((error as any).response);
+      throw error;
     }
   }
 }

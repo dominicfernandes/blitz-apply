@@ -5,9 +5,14 @@ import { TextGenerationService } from './text-generation.service';
 
 jest.mock('openai', () => ({
   OpenAIApi: jest.fn().mockImplementation(() => ({
-    createCompletion: jest.fn().mockImplementation(() => ({
-      data: 'OpenAI generated data.',
-    })),
+    createCompletion: jest
+      .fn()
+      .mockImplementationOnce(() => ({
+        data: 'OpenAI generated data.',
+      }))
+      .mockImplementationOnce(() => {
+        throw new Error('error');
+      }),
   })),
   Configuration: jest.fn(),
 }));
@@ -15,7 +20,7 @@ jest.mock('openai', () => ({
 describe('TextGenerationService', () => {
   let service: TextGenerationService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule.forRoot()],
       providers: [TextGenerationService],
@@ -36,5 +41,19 @@ describe('TextGenerationService', () => {
       TextModels.DaVinci,
     );
     expect(response).toEqual('OpenAI generated data.');
+  });
+
+  it('should throw an error when the client fails to get data', async () => {
+    try {
+      const response = await service.generateTextFromPrompt(
+        'test',
+        1,
+        100,
+        TextModels.DaVinci,
+      );
+      console.log(response);
+    } catch (error) {
+      expect(error.message).toEqual('error');
+    }
   });
 });
