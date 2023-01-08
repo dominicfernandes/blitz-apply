@@ -14,6 +14,14 @@ export class TextGenerationService {
     this.openAIClient = new OpenAIApi(config);
   }
 
+  /**
+   * generates text based on the prompt provided
+   * @param prompt text keywords used to tell openAI what kind of content to generate
+   * @param temperature defines randomness of the content that is generated
+   * @param max_tokens specifies the length of the content
+   * @param model specifies what text generation model to be used
+   * @returns response from openAI containing content of the prompt
+   */
   async generateTextFromPrompt(
     prompt: string,
     temperature: number,
